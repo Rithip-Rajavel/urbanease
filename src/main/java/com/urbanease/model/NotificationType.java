@@ -1,0 +1,14 @@
+package com.urbanease.model;
+
+public enum NotificationType {
+    NEW_BOOKING_REQUEST,
+    BOOKING_ACCEPTED,
+    BOOKING_REJECTED,
+    BOOKING_CANCELLED,
+    SERVICE_STARTED,
+    SERVICE_COMPLETED,
+    NEW_MESSAGE,
+    NEW_REVIEW,
+    PAYMENT_RECEIVED,
+    SYSTEM_UPDATE
+}
