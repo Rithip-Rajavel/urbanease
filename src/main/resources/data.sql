@@ -16,6 +16,6 @@ INSERT INTO services (name, description, category_id, base_price, estimated_dura
 ('Garden Maintenance', 'Lawn mowing, weeding, plant care', 4, 120.00, 150, true, NOW(), NOW()),
 ('Pest Extermination', 'Complete pest control treatment', 5, 300.00, 60, true, NOW(), NOW());
 
--- Insert admin user
+-- Insert admin user (password: admin123)
 INSERT INTO users (username, password, email, role, is_active, is_available, created_at, updated_at) VALUES
-('admin', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin@urbanease.com', 'ADMIN', true, false, NOW(), NOW());
+('admin', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iKVjzieMwkOmANgNOgKQNNBDvAGK', 'admin@urbanease.com', 'ADMIN', true, false, NOW(), NOW());

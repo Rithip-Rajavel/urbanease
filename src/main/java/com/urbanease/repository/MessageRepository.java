@@ -17,7 +17,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     
     List<Message> findByReceiverAndIsReadOrderByCreatedAtDesc(User receiver, boolean isRead);
     
-    List<Message> findByBookingOrderByCreatedAtDesc(Long bookingId);
+    List<Message> findByBookingIdOrderByCreatedAtDesc(Long bookingId);
     
     @Query("SELECT m FROM Message m WHERE (m.sender = :user1 AND m.receiver = :user2) OR " +
            "(m.sender = :user2 AND m.receiver = :user1) ORDER BY m.createdAt ASC")

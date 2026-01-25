@@ -73,7 +73,7 @@ public class MessageService {
             throw new RuntimeException("You are not part of this booking");
         }
 
-        return messageRepository.findByBookingOrderByCreatedAtDesc(bookingId);
+        return messageRepository.findByBookingIdOrderByCreatedAtDesc(bookingId);
     }
 
     @Transactional
