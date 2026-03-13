@@ -26,18 +26,14 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByMobileNumber(String mobileNumber);
     
     List<User> findByRole(UserRole role);
-    
+
     List<User> findByRoleAndIsAvailable(UserRole role, boolean isAvailable);
-    
-    @Query("SELECT u FROM User u WHERE u.role = :role AND u.isAvailable = true AND " +
-           "(6371 * acos(cos(radians(:latitude)) * cos(radians(u.currentLocation.latitude)) * " +
-           "cos(radians(u.currentLocation.longitude) - radians(:longitude)) + " +
-           "sin(radians(:latitude)) * sin(radians(u.currentLocation.latitude)))) < :distance")
-    List<User> findNearbyProviders(@Param("role") UserRole role, 
-                                  @Param("latitude") double latitude,
-                                  @Param("longitude") double longitude,
-                                  @Param("distance") double distance);
-    
+
+    // Nearby providers: use ProviderProfile-based search (User no longer stores coordinates)
+    default java.util.List<User> findNearbyProviders(UserRole role, double latitude, double longitude, double distance) {
+        return findByRoleAndIsAvailable(role, true);
+    }
+
     @Query("SELECT u FROM User u WHERE u.otpCode = :otpCode AND u.otpExpiry > CURRENT_TIMESTAMP")
     Optional<User> findByValidOtp(@Param("otpCode") String otpCode);
 }

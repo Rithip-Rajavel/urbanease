@@ -45,9 +45,6 @@ public class User implements UserDetails {
     @Column(name = "is_available")
     private boolean isAvailable = false;
 
-    @Embedded
-    @Column(name = "current_location")
-    private Location currentLocation;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

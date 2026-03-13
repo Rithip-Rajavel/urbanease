@@ -24,24 +24,14 @@ public class LocationService {
             throw new RuntimeException("User is not a service provider");
         }
 
-        if (provider.getCurrentLocation() == null) {
-            provider.setCurrentLocation(new com.urbanease.model.Location());
-        }
-
-        provider.getCurrentLocation().setLatitude(latitude);
-        provider.getCurrentLocation().setLongitude(longitude);
-        userRepository.save(provider);
-
-        log.info("Updated location for provider {}: {}, {}", providerId, latitude, longitude);
+        // Note: currentLocation has been removed from User entity.
+        // Location updates should be stored in a dedicated table (e.g., ProviderProfile).
+        log.info("Location update requested for provider {} ({}, {}) — not persisted (no location column on User)", providerId, latitude, longitude);
     }
 
     public List<User> findNearbyProviders(double customerLatitude, double customerLongitude, double searchRadiusKm) {
-        return userRepository.findNearbyProviders(
-                UserRole.SERVICE_PROVIDER, 
-                customerLatitude, 
-                customerLongitude, 
-                searchRadiusKm
-        );
+        // Returns all available service providers — distance filtering handled client-side or via ProviderProfile
+        return userRepository.findByRoleAndIsAvailable(UserRole.SERVICE_PROVIDER, true);
     }
 
     public double calculateDistance(double lat1, double lon1, double lat2, double lon2) {

@@ -23,10 +23,27 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
+        // Determine a clean, user-friendly message (never expose raw SQL/JDBC details)
+        String friendlyMessage;
+        String rawMessage = authException.getMessage();
+        if (rawMessage != null && (rawMessage.contains("JDBC") || rawMessage.contains("SQL") || rawMessage.contains("HibernateException"))) {
+            friendlyMessage = "Authentication failed due to a server error. Please try again later.";
+        } else if (rawMessage != null && rawMessage.toLowerCase().contains("bad credentials")) {
+            friendlyMessage = "Invalid username or password.";
+        } else if (rawMessage != null && rawMessage.toLowerCase().contains("disabled")) {
+            friendlyMessage = "Your account has been disabled. Please contact support.";
+        } else if (rawMessage != null && rawMessage.toLowerCase().contains("locked")) {
+            friendlyMessage = "Your account has been locked. Please contact support.";
+        } else if (rawMessage != null && rawMessage.toLowerCase().contains("expired")) {
+            friendlyMessage = "Your session has expired. Please log in again.";
+        } else {
+            friendlyMessage = "Authentication failed. Please check your credentials and try again.";
+        }
+
         Map<String, Object> body = new HashMap<>();
         body.put("status", HttpServletResponse.SC_UNAUTHORIZED);
         body.put("error", "Unauthorized");
-        body.put("message", authException.getMessage());
+        body.put("message", friendlyMessage);
         body.put("path", request.getServletPath());
 
         ObjectMapper mapper = new ObjectMapper();

@@ -18,4 +18,33 @@ INSERT INTO services (name, description, category_id, base_price, estimated_dura
 
 -- Insert admin user (password: admin123)
 INSERT INTO users (username, password, email, role, is_active, is_available, created_at, updated_at) VALUES
-('admin', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iKVjzieMwkOmANgNOgKQNNBDvAGK', 'admin@urbanease.com', 'ADMIN', true, false, NOW(), NOW());
+('admin', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iKVjzieMwkOmANgNOgKQNNBDvAGK', 'admin@urbanease.com', 'ADMIN', true, false, NOW(), NOW())
+ON CONFLICT (username) DO NOTHING;
+
+-- ============================================================
+-- DEFAULT TEST USERS (for development/testing only)
+-- ============================================================
+
+-- Test Customer  →  username: testcustomer  |  password: customer123
+INSERT INTO users (username, password, email, mobile_number, role, is_active, is_available, created_at, updated_at) VALUES
+('testcustomer',
+ '$2a$10$slYQmyNdgTY18LLaOrVI3OHPg9hmmpkr7wkHJDXMgVkQM7f4mfAni',
+ 'testcustomer@urbanease.com',
+ '9000000001',
+ 'CUSTOMER',
+ true,
+ false,
+ NOW(), NOW())
+ON CONFLICT (username) DO NOTHING;
+
+-- Test Service Provider  →  username: testprovider  |  password: provider123
+INSERT INTO users (username, password, email, mobile_number, role, is_active, is_available, created_at, updated_at) VALUES
+('testprovider',
+ '$2a$10$GUIs9PbIYOkPPVMzHhS4x.8oKOiSMT1.zXn8RbsBnWf9uXFIfVSna',
+ 'testprovider@urbanease.com',
+ '9000000002',
+ 'SERVICE_PROVIDER',
+ true,
+ true,
+ NOW(), NOW())
+ON CONFLICT (username) DO NOTHING;
