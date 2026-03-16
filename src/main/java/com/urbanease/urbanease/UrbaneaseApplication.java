@@ -11,7 +11,7 @@ import org.springframework.context.annotation.ComponentScan;
 })
 @EnableJpaRepositories("com.urbanease.repository")
 @EntityScan("com.urbanease.model")
-@ComponentScan("com.urbanease")
+@ComponentScan(basePackages = "com.urbanease")
 public class UrbaneaseApplication {
 
 	public static void main(String[] args) {

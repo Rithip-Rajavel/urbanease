@@ -4,12 +4,17 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "provider_profiles")
+@Table(name = "provider_profiles", indexes = {
+    @Index(name = "idx_user_id", columnList = "user_id"),
+    @Index(name = "idx_verification_status", columnList = "verification_status"),
+    @Index(name = "idx_average_rating", columnList = "average_rating")
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,6 +26,7 @@ public class ProviderProfile {
 
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
     private User user;
 
     private String firstName;
@@ -61,6 +67,7 @@ public class ProviderProfile {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "provider", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Review> reviews;
 
     @PrePersist

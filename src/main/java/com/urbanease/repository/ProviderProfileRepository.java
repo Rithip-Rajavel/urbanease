@@ -17,10 +17,13 @@ public interface ProviderProfileRepository extends JpaRepository<ProviderProfile
     
     List<ProviderProfile> findByVerificationStatus(VerificationStatus status);
     
-    @Query("SELECT p FROM ProviderProfile p WHERE p.user.isAvailable = true AND " +
-           "(6371 * acos(cos(radians(:latitude)) * cos(radians(p.user.currentLocation.latitude)) * " +
-           "cos(radians(p.user.currentLocation.longitude) - radians(:longitude)) + " +
-           "sin(radians(:latitude)) * sin(radians(p.user.currentLocation.latitude)))) < :distance")
+    @Query(value = "SELECT pp.* FROM provider_profiles pp " +
+                   "JOIN users u ON pp.user_id = u.id " +
+                   "WHERE u.is_available = true " +
+                   "AND (6371 * acos(cos(radians(:latitude)) * cos(radians(u.latitude)) * " +
+                   "cos(radians(u.longitude) - radians(:longitude)) + " +
+                   "sin(radians(:latitude)) * sin(radians(u.latitude)))) < :distance",
+           nativeQuery = true)
     List<ProviderProfile> findNearbyProviders(@Param("latitude") double latitude,
                                              @Param("longitude") double longitude,
                                              @Param("distance") double distance);

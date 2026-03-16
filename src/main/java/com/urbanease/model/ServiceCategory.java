@@ -4,12 +4,16 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "service_categories")
+@Table(name = "service_categories", indexes = {
+    @Index(name = "idx_is_active", columnList = "is_active"),
+    @Index(name = "idx_name", columnList = "name")
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -37,6 +41,7 @@ public class ServiceCategory {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Service> services;
 
     @PrePersist

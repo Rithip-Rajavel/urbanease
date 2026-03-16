@@ -4,12 +4,16 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "services")
+@Table(name = "services", indexes = {
+    @Index(name = "idx_category_id", columnList = "category_id"),
+    @Index(name = "idx_is_active", columnList = "is_active")
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,6 +30,7 @@ public class Service {
 
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
+    @JsonIgnore
     private ServiceCategory category;
 
     @Column(name = "base_price")

@@ -1,9 +1,12 @@
 package com.urbanease.controller;
 
-import com.urbanease.model.ServiceCategory;
+import com.urbanease.dto.ServiceCategoryDto;
+import com.urbanease.dto.ServiceDto;
 import com.urbanease.model.User;
 import com.urbanease.repository.ServiceCategoryRepository;
+import com.urbanease.repository.ServiceRepository;
 import com.urbanease.service.LocationService;
+import com.urbanease.service.ServiceMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -21,13 +24,24 @@ import java.util.Map;
 public class ServiceController {
 
     private final ServiceCategoryRepository serviceCategoryRepository;
+    private final ServiceRepository serviceRepository;
     private final LocationService locationService;
+    private final ServiceMapper serviceMapper;
 
     @GetMapping("/categories")
     @Operation(summary = "Get all active service categories")
-    public ResponseEntity<List<ServiceCategory>> getActiveCategories() {
-        List<ServiceCategory> categories = serviceCategoryRepository.findByIsActive(true);
-        return ResponseEntity.ok(categories);
+    public ResponseEntity<List<ServiceCategoryDto>> getActiveCategories() {
+        var categories = serviceCategoryRepository.findByIsActive(true);
+        var categoryDtos = serviceMapper.toServiceCategoryDtoList(categories);
+        return ResponseEntity.ok(categoryDtos);
+    }
+
+    @GetMapping("/category/{categoryId}")
+    @Operation(summary = "Get services by category ID")
+    public ResponseEntity<List<ServiceDto>> getServicesByCategory(@PathVariable Long categoryId) {
+        var services = serviceRepository.findByCategoryIdAndIsActive(categoryId, true);
+        var serviceDtos = serviceMapper.toServiceDtoList(services);
+        return ResponseEntity.ok(serviceDtos);
     }
 
     @GetMapping("/providers/nearby")
