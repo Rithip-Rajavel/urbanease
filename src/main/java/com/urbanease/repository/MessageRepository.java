@@ -32,4 +32,10 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     
     @Query("SELECT m FROM Message m WHERE m.createdAt >= :since ORDER BY m.createdAt DESC")
     List<Message> findMessagesSince(@Param("since") LocalDateTime since);
+    
+    @Query("SELECT DISTINCT m.receiver FROM Message m WHERE m.sender = :user")
+    List<User> findConversationPartners(@Param("user") User user);
+    
+    @Query("SELECT DISTINCT m.sender FROM Message m WHERE m.receiver = :user")
+    List<User> findConversationSenders(@Param("user") User user);
 }

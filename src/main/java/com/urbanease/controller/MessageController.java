@@ -1,5 +1,6 @@
 package com.urbanease.controller;
 
+import com.urbanease.dto.ConversationDto;
 import com.urbanease.dto.MessageRequest;
 import com.urbanease.model.Message;
 import com.urbanease.model.User;
@@ -41,6 +42,16 @@ public class MessageController {
             @AuthenticationPrincipal User currentUser) {
         
         List<Message> messages = messageService.getConversation(userId, currentUser);
+        return ResponseEntity.ok(messages);
+    }
+
+    @GetMapping("/conversation/username/{username}")
+    @Operation(summary = "Get conversation with user by username")
+    public ResponseEntity<List<Message>> getConversationByUsername(
+            @PathVariable String username,
+            @AuthenticationPrincipal User currentUser) {
+        
+        List<Message> messages = messageService.getConversationByUsername(username, currentUser);
         return ResponseEntity.ok(messages);
     }
 
@@ -95,5 +106,14 @@ public class MessageController {
         Map<String, String> response = new HashMap<>();
         response.put("message", "All messages marked as read");
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/conversations")
+    @Operation(summary = "Get all user conversations")
+    public ResponseEntity<List<ConversationDto>> getUserConversations(
+            @AuthenticationPrincipal User currentUser) {
+        
+        List<ConversationDto> conversations = messageService.getUserConversations(currentUser);
+        return ResponseEntity.ok(conversations);
     }
 }

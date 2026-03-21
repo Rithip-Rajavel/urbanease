@@ -1,5 +1,6 @@
 package com.urbanease.service;
 
+import com.urbanease.dto.ConversationDto;
 import com.urbanease.dto.MessageRequest;
 import com.urbanease.model.Booking;
 import com.urbanease.model.Message;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +24,8 @@ public class MessageService {
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
+    private final OneSignalService oneSignalService;
+    private final ConversationMapper conversationMapper;
 
     @Transactional
     public Message sendMessage(MessageRequest request, User sender) {
@@ -50,6 +54,17 @@ public class MessageService {
         }
 
         Message savedMessage = messageRepository.save(message);
+
+        // Send push notification to receiver
+        try {
+            oneSignalService.sendMessageNotification(
+                receiver.getId(), 
+                sender.getUsername(), 
+                savedMessage.getContent()
+            );
+        } catch (Exception e) {
+            log.warn("Failed to send push notification: {}", e.getMessage());
+        }
 
         log.info("Message sent from {} to {}: {}", sender.getId(), receiver.getId(), savedMessage.getId());
         return savedMessage;
@@ -114,5 +129,32 @@ public class MessageService {
         });
 
         log.info("Marked {} messages as read for user {}", unreadMessages.size(), currentUser.getId());
+    }
+
+    @Transactional
+    public List<ConversationDto> getUserConversations(User currentUser) {
+        // Get all users the current user has had conversations with
+        List<User> conversationPartners = messageRepository.findConversationPartners(currentUser);
+        List<User> conversationSenders = messageRepository.findConversationSenders(currentUser);
+        
+        // Combine both lists and remove duplicates
+        conversationPartners.removeAll(conversationSenders);
+        conversationPartners.addAll(conversationSenders);
+        
+        return conversationPartners.stream()
+                .map(partner -> {
+                    List<Message> messages = messageRepository.findConversationBetweenUsers(currentUser, partner);
+                    Long unreadCount = messageRepository.countUnreadMessages(currentUser);
+                    return conversationMapper.toConversationDto(partner, currentUser, messages, unreadCount);
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public List<Message> getConversationByUsername(String username, User currentUser) {
+        User otherUser = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
+
+        return messageRepository.findConversationBetweenUsers(currentUser, otherUser);
     }
 }
